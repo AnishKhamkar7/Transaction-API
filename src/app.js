@@ -16,6 +16,11 @@ app.use(express.json())
 
 
 //routes
+import transactionRoute from "./routes/transaction.routes.js"
+import userRoute from "./routes/user.routes.js"
+
+app.use('/api',transactionRoute)
+app.use('/api',userRoute)
 
 
 export { app }
