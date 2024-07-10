@@ -9,6 +9,12 @@ const UserSchema = new mongoose.Schema({
         unqiue: true,
         lowercase:true
     },
+    MobileNo:{
+        type: String,
+        required: true,
+        unique: true
+
+    },
     Email:{
         type: String,
         required: true,

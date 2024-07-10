@@ -20,9 +20,9 @@ const generateAccessAndRefreshToken = async(UserID) =>{
 
 const registerUser = async(req,res)=>{
     try {
-        const { Username, Email, Password} = req.body
+        const { Username, Email, Password,MobileNo} = req.body
 
-        if(!Username || !Email || !Password){
+        if(!Username || !Email || !Password || !MobileNo){
             return res.status(400).json({
                 message: " All the fields are mandatory"
             })
@@ -41,10 +41,11 @@ const registerUser = async(req,res)=>{
         const Createduser = await User.create({
             Username: Username.toLowerCase(),
             Email,
-            Password
+            Password,
+            MobileNo
         })
 
-        const user = await User.findById(Createduser._id).select("-password -refreshToken")
+        const user = await User.findById(Createduser._id).select("-Password -refreshToken")
 
         if (!user) {
             return res.status(400).json({
