@@ -9,12 +9,22 @@ const TransactionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    Description:{
-        type:String
+    ReceiverId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
+    ReceiverMobile:{
+        type: String,
+        required: true,
+        unique: true
     },
     Category:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category"
+    },
+    Balance:{
+        type: Number,
+        required: true
     }
 
 },{
