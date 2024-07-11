@@ -1,22 +1,32 @@
 import { User } from "../models/user.model.js"
+import jwt from "jsonwebtoken"
 
 
-const generateAccessAndRefreshToken = async(UserID) =>{
+const generateAccessAndRefreshToken = async (UserID) => {
     try {
-        const user = await User.findById(UserID)
-        const accessToken = await user.generateAccessToken()
-        const refreshToken = await user.generateRefreshToken()
+    const user = await User.findById(UserID);
 
-        user.refreshToken = refreshToken
-
-        await user.save({validateBeforeSave:false})
-        return {refreshToken,accessToken}
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
+    if (!user) {
+    throw new Error("User not found");
     }
-}
+
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+
+    
+
+    user.refreshToken = refreshToken;
+
+    await user.save({ validateBeforeSave: false });
+    
+    return { refreshToken, accessToken };
+} catch (error) {
+    console.error("Error generating tokens:", error);
+    throw new Error(error.message); // Re-throw the error to be handled by the caller
+    }
+};
+
+
 
 const registerUser = async(req,res)=>{
     try {
@@ -100,12 +110,13 @@ try {
             httpOnly: true,
             secure: true 
         }
+        
      
-        return res
+        res
         .status(200)
         .cookie("accessToken", accessToken,options)
         .cookie("refreshToken",refreshToken,options)
-        .json(loggeduser)
+        .json(loggeduser,accessToken,refreshToken)
     
     
 } catch (error) {

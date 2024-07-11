@@ -4,14 +4,11 @@ const checkbalance = async(userId) =>{
     const user = await User.findById(userId)
 
     if (user.Balance <= 0) {
-        return resizeBy.status(400).json({
-            message:"You dont have sufficient Balance"
-        })
+        throw new Error("You dont have sufficenit balance");
     }
 
     const remaningBal = user.Balance
 
-    return { balanceLeft }
 }
 
 export { checkbalance }

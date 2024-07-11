@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
         lowercase:true
     },
     MobileNo:{
-        type: String,
+        type: Number,
         required: true,
         unique: true
 
@@ -49,29 +49,32 @@ UserSchema.methods.isPasswordCorrect = async function(Password){
     return await bcrypt.compare(Password,this.Password)
 }
 
-UserSchema.methods.generateAccessToken = function(){
-    return jwt.sign({
-        _id: this._is,
-        Usernme: this.Username,
-        Email: this.Email
-    },process.env.ACCESS_TOKEN_SECRET,
-        
+UserSchema.methods.generateAccessToken = function() {
+    const token = jwt.sign(
     {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-    })
-}
-UserSchema.methods.generateRefreshToken = function() {
-    return jwt.sign(
-        {
-            _id: this._id,
-        },
-        process.env.REFRESH_TOKEN_SECRET,
-        
-        {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-        }
-    )
-}
-
+    _id: this._id,
+    Username: this.Username,
+    Email: this.Email
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+    }
+    );
+    return token;
+};
+  
+  UserSchema.methods.generateRefreshToken = function() {
+    const token = jwt.sign(
+    {
+    _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+    }
+    );
+    return token;
+  };
 
 export const User = mongoose.model("User",UserSchema)

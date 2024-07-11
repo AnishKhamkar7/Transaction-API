@@ -5,6 +5,12 @@ const vertfyJWT = async(req,res,next) =>{
     try {
         const access = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","")
 
+        if(!access){
+            return res.status(400).json({
+                message: "Token is missing"
+            })
+        }
+
 
         const verification = jwt.verify(access, process.env.ACCESS_TOKEN_SECRET)
 
