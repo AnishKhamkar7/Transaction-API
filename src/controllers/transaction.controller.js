@@ -18,34 +18,34 @@ const sendcredit = async(req,res)=>{
 
     try {
         // Find the sender and receiver within the session
-        const sender = await User.findById(user._id).session(session);
+        // const sender = await User.findById(user._id).session(session);
 
         // console.log(sender)
         const receiver = await User.findOne({MobileNo:ReceiverMobile}).session(session);
         // console.log(receiver)
 
         // Ensure both users are valid
-        if (!sender || !receiver) {
+        if (!receiver) {
             throw new Error('Invalid sender or receiver');
         }
 
         // Ensure sender has enough balance
-        if (sender.Balance < Amount) {
+        if (user.Balance < Amount) {
             throw new Error('Insufficient balance');
         }
         const amountToAdd = parseFloat(Amount);
 
         // Update balances
-        sender.Balance -= amountToAdd;
+        user.Balance -= amountToAdd;
         receiver.Balance += amountToAdd;
 
         // Save the updates within the session
-        await sender.save({ session });
+        await user.save({ session });
         await receiver.save({ session });
 
         // Record the transaction within the session
         const transaction = new Transaction({
-            UserId: sender._id,
+            UserId: user._id,
             ReceiverId: receiver._id,
             Amount,
             Balance: sender.Balance,
