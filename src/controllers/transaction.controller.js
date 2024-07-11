@@ -48,7 +48,7 @@ const sendcredit = async(req,res)=>{
             UserId: user._id,
             ReceiverId: receiver._id,
             Amount,
-            Balance: sender.Balance,
+            Balance: user.Balance,
             ReceiverMobile,
         });
 
