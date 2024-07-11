@@ -44,25 +44,33 @@ const sendcredit = async(req,res)=>{
         await receiver.save({ session });
 
         // Record the transaction within the session
+      
+        const checkcategory = new Category({
+            name : category,
+            UserId: user._id
+        })
+        
+        await checkcategory.save({ session });
+
         const transaction = new Transaction({
             UserId: user._id,
             ReceiverId: receiver._id,
             Amount,
             Balance: user.Balance,
             ReceiverMobile,
+            Category: checkcategory._id
         });
 
-        const checkcategory = new Category({
-            name : category,
-            UserId: user._id
-        })
-
+        
         await transaction.save({ session });
-        await checkcategory.save({ session });
+       
+
+        console.log(transaction);
 
         // Commit the transaction
         await session.commitTransaction();
         session.endSession();
+    
 
         res.status(200).json( { message: "Credit sent successfully", updatedBalance: receiver.Balance, transaction: transaction  });
     } catch (error) {
