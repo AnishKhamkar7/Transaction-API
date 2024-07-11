@@ -5,7 +5,15 @@ import { User } from "../models/user.model.js"
 import { Category } from "../models/categories.model.js"
 
 const sendcredit = async(req,res)=>{
-    const user = req.user
+    const userId = req.user
+
+    const user = await User.findById(userId)
+
+    if (!user) {
+        return res.status(400).json({
+            messag: "User Not found"
+        })
+    }
 
     const { ReceiverMobile, Amount, category } = req.body
     // console.log("ReceiverMobile:", ReceiverMobile);

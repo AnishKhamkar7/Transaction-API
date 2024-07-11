@@ -20,7 +20,7 @@ const vertfyJWT = async(req,res,next) =>{
             return res.status(400).json("Invalid UserID access")
         }
 
-        req.user = user
+        req.user = user._id
         next();
 
     } catch (error) {
