@@ -96,7 +96,7 @@ const checkStatement = async(req,res)=>{
         const { _id } = req.params
         const userId = req.user
     
-        if (!_id == userId) {
+        if(_id != userId) {
             return res.status(404).json({
                 message:"Cannot retrieve transaction history of this account"
             })
@@ -152,6 +152,5 @@ const checkStatement = async(req,res)=>{
         })
     }
 }
-
 
 export { sendcredit,checkStatement }
