@@ -55,7 +55,7 @@ const sendcredit = async(req,res)=>{
       
         const checkcategory = new Category({
             name : category,
-            UserId: user._id
+            UserID: user._id
         })
         
         await checkcategory.save({ session });
@@ -91,5 +91,67 @@ const sendcredit = async(req,res)=>{
 
 }
 
+const checkStatement = async(req,res)=>{
+    try {
+        const { _id } = req.params
+        const userId = req.user
+    
+        if (!_id == userId) {
+            return res.status(404).json({
+                message:"Cannot retrieve transaction history of this account"
+            })
+        }
 
-export { sendcredit }
+        const statement = await Transaction.aggregate([
+            {
+                $match:{
+                    UserId: userId
+                }
+            },
+            {
+                $lookup:{
+                    from: "categories",
+                    as: "userStatement",
+                    foreignField: "_id",
+                    localField: "Category"
+                }
+            },
+            {
+                $unwind: "$userStatement"
+            },
+            {
+                $project:{
+                    Amount: 1,
+                    ReceiverMobile: 1,
+                    Balance: 1,
+                    Category: "$userStatement.name",
+                    date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }
+                }
+            },
+            {
+                $sort: {
+                    createdAt: -1
+                }
+            }
+        ])
+    
+        if(!statement?.length){
+            return res.status(404).json({
+                message:  "Statement does not exists"
+            })
+        }
+    
+        return res
+        .status(200)
+        .json({message: "TRANSACTION HISTORY",statement})
+    
+    
+    } catch (error) {
+        return res.status(500).json({
+            message:"something went wrong",error
+        })
+    }
+}
+
+
+export { sendcredit,checkStatement }
