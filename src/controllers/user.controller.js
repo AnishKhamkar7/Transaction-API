@@ -126,7 +126,45 @@ try {
     })
 }
 
+const changePassword = async(req,res)=>{
+    try {
+        const userId = req.user
+
+        const { NewPassword } = req.body
+
+        const user = await User.findById(userId)
+
+        const checkSamePassword = user.isPasswordCorrect(NewPassword)
+
+        if(checkSamePassword){
+            return res.status(400).json({
+                message: "The Password is same to that if the old password"
+            })
+        }
+
+        User.password = NewPassword
+
+        const newPassUser = await User.save()
+
+        if(!newPassUser){
+            return res.status(400).json({
+                message: "Something went wrong during the saving of the new password"
+            })
+        }
+
+        return res
+        .status(200)
+        .json({
+            message: "Password updated Succesfully"
+        })
+    } catch (error) {
+        return res.stauts(500).json({
+            message:"Something went wrong",error
+        })       
+    }
+}
+
     
 }
 
-export { registerUser,loginUser }
+export { registerUser,loginUser, changePassword }
