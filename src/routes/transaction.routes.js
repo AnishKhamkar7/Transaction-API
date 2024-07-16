@@ -10,9 +10,7 @@ router.route('/transfer').post(vertfyJWT, sendcredit)
 router.route('/history/:_id').get(vertfyJWT,checkStatement)
 
 //check statement on the basis of categories
-router.route('/historyName/:_id').get(vertfyJWT,getCategoryHistory)
-
-
+router.route('/history').get(vertfyJWT,getCategoryHistory)
 
 
 export default router
