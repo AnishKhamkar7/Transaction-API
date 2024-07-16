@@ -173,16 +173,35 @@ const logout = async(req,res)=>{
         //clear refreshtoken from db
         //the user needs to be loggedin before to log out
 
-        const deluser = await User.findByIdAndDelete(req.user)
+        const deluser = await User.findByIdAndDelete(
+            req.user,
+            {
+                $set:{
+                    refreshToken: undefined
+                }
 
-        if(deluser){
-            return res.status(400).json({
-                message: "Logout"
-            })
+
+        },{
+            new: true
+        })
+
+        const options ={
+            httpOnly: true,
+            secure: true
         }
 
+        res
+        .status(200)
+        .clearCookie("refreshToken",options)
+        .clearCookie("accessToken",options)
+        .json({
+            message: "User Logged Out"
+        })
+
     } catch (error) {
-        
+        return res.status(500).json({
+            message: error.message
+        })
     }
 }
 
