@@ -154,75 +154,24 @@ const checkStatement = async(req,res)=>{
 }
 const getCategoryHistory = async(req,res)=>{
     try {
-        const { _id } = req.params
-        const userId = req.user
-        const { categoryName } = req.body
 
-        if (!categoryName) {
-            console.log("Errorrrrrrrrrr");
-        }
+        const userId = req.user;
+        const { category } = req.query;
         
-        if(_id != userId) {
-            return res.status(404).json({
-                message:"Cannot retrieve transaction history of this account"
-            })
-        }
-
-        const user = User.findById(userId)
-
-        const statement = await Transaction.aggregate([
-            {
-                $match: {
-                    UserId: userId
-                }
-            },
-            {
-                $lookup:{
-                    from: "categories",
-                    as: "categoryname",
-                    foreignField: "_id",
-                    localField: "Category"
-                }
-            },
-            {
-                $match:{
-                    $categoryname: categoryName
-                }
-            },
-            {
-                $project:{
-                    Amount: 1,
-                    ReceiverMobile: 1,
-                    Balance: 1,
-                    Category: $categoryname
-                    // date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }
-                }
-            }
-        ])
-
-        
-        if(!statement?.length){
-            return res.status(404).json({
-                message:  "Statement does not exists"
-            })
+        const categoryDoc = await Category.findOne({ name: category, userId });
+    
+        if (!categoryDoc) {
+          return res.status(404).json({ message: 'Category not found' });
         }
     
-        return res
-        .status(200)
-        .json({message: "TRANSACTION HISTORY",statement})
-
         
-
-
-
-    } catch (error) {
-        return res.status(500).json({
-            message: "Something went wrong",
-            error
-        })
+        const transactions = await Transaction.find({ userId, categoryId: categoryDoc._id });
+    
+        res.json(transactions);
+      } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+      }
     }
-}
-
 
 
 
