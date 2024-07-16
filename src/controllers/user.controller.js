@@ -206,4 +206,4 @@ const logout = async(req,res)=>{
 }
 
 
-export { registerUser,loginUser,changePassword }
+export { registerUser,loginUser,changePassword,logout }
