@@ -124,7 +124,9 @@ try {
         message: error.message
 
     })
+} 
 }
+
 
 const changePassword = async(req,res)=>{
     try {
@@ -135,6 +137,7 @@ const changePassword = async(req,res)=>{
         const user = await User.findById(userId)
 
         const checkSamePassword = user.isPasswordCorrect(NewPassword)
+        console.log(checkSamePassword)
 
         if(checkSamePassword){
             return res.status(400).json({
@@ -142,9 +145,9 @@ const changePassword = async(req,res)=>{
             })
         }
 
-        User.password = NewPassword
+        user.Password = NewPassword
 
-        const newPassUser = await User.save()
+        const newPassUser = await user.save()
 
         if(!newPassUser){
             return res.status(400).json({
@@ -158,13 +161,30 @@ const changePassword = async(req,res)=>{
             message: "Password updated Succesfully"
         })
     } catch (error) {
-        return res.stauts(500).json({
-            message:"Something went wrong",error
+        return res.status(500).json({
+            message: error.message
         })       
     }
 }
 
-    
+const logout = async(req,res)=>{
+    try {
+        //clear cookie
+        //clear refreshtoken from db
+        //the user needs to be loggedin before to log out
+
+        const deluser = await User.findByIdAndDelete(req.user)
+
+        if(deluser){
+            return res.status(400).json({
+                message: "Logout"
+            })
+        }
+
+    } catch (error) {
+        
+    }
 }
 
-export { registerUser,loginUser, changePassword }
+
+export { registerUser,loginUser,changePassword }
