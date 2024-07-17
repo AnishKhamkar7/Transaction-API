@@ -1,6 +1,6 @@
 import { User } from "../models/user.model.js"
 import jwt from "jsonwebtoken"
-
+import { validateMobileNo } from "../utils/validateMobile.utils.js";
 
 const generateAccessAndRefreshToken = async (UserID) => {
     try {
@@ -47,6 +47,9 @@ const registerUser = async(req,res)=>{
                 message: "Email or Username already exists"
             })
         }
+
+        const valPass = validateMobileNo(MobileNo)
+
 
         const Createduser = await User.create({
             Username: Username.toLowerCase(),
@@ -132,18 +135,26 @@ const changePassword = async(req,res)=>{
     try {
         const userId = req.user
 
-        const { NewPassword } = req.body
+        const { NewPassword,ConfirmPassword } = req.body
+
+        if(NewPassword != ConfirmPassword){
+            return res.status(400).json({
+                message: "Please enter same confirm Password"
+            })
+        }
 
         const user = await User.findById(userId)
+
+        console.log(user);
 
         const checkSamePassword = user.isPasswordCorrect(NewPassword)
         console.log(checkSamePassword)
 
-        if(checkSamePassword){
-            return res.status(400).json({
-                message: "The Password is same to that if the old password"
-            })
-        }
+        // if(checkSamePassword){
+        //     return res.status(400).json({
+        //         message: "The Password is same to that of the old password"
+        //     })
+        // }
 
         user.Password = NewPassword
 
@@ -173,7 +184,7 @@ const logout = async(req,res)=>{
         //clear refreshtoken from db
         //the user needs to be loggedin before to log out
 
-        const deluser = await User.findByIdAndDelete(
+        const deluser = await User.findByIdAndUpdate(
             req.user,
             {
                 $set:{
