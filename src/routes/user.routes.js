@@ -10,7 +10,7 @@ router.route('/register').post(registerUser)
 router.route('/login').post(loginUser)
 
 //update password
-router.route('/updatePassword').put(vertfyJWT,changePassword) //not yet tested
+router.route('/updatePassword').put(vertfyJWT,changePassword) 
 
 //logout user
 router.route('/logout').post(vertfyJWT,logout)
